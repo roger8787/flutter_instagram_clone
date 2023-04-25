@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:playground_app_april_2023/screens/login_screen.dart';
+import 'package:playground_app_april_2023/screens/register_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,7 +9,7 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // This widget is the root of your application.git
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const RegisterScreen(),
     );
   }
 }
