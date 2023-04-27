@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:playground_app_april_2023/firebase/auth_methods.dart';
+import 'package:playground_app_april_2023/screens/home_screen.dart';
 import 'package:playground_app_april_2023/screens/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -9,6 +11,45 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  //create the variables
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  //methods
+  void _loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      String res = await AuthMethods().loginUser(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      if (res == 'success') {
+        if (!mounted) return;
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
+      }
+    } catch (e) {
+      print(e.toString());
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,58 +69,65 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             Container(
               margin: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.email),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: Icon(Icons.lock),
-                    ),
-                    obscureText: true,
-                  ),
-                  SizedBox(height: 16),
-                  SizedBox(height: 24),
-                  Container(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Add your sign up logic here
-                      },
-                      child: Text('Login'),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('Dont have an account?'),
-                      SizedBox(
-                        width: 5,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.email),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const RegisterScreen()));
-                        },
-                        child: Text('Sign Up',
-                            style: const TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                            )),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                        labelText: 'Password',
+                        prefixIcon: Icon(Icons.lock),
                       ),
-                    ],
-                  ),
-                ],
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
+                    Container(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _loginUser,
+                        child: _isLoading
+                            ? const CircularProgressIndicator.adaptive(
+                                backgroundColor: Colors.white,
+                              )
+                            : const Text('Login'),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Dont have an account?'),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const RegisterScreen()));
+                          },
+                          child: const Text('Sign Up',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                              )),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
